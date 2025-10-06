@@ -70,7 +70,11 @@ up-dev:
 
 # Stop services
 down:
-	docker-compose down
+	docker-compose down -v
+
+clean: down
+	docker system prune -a -f
+	
 
 # Restart services
 restart:
