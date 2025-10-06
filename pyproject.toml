@@ -29,6 +29,8 @@ dependencies = [
     "prometheus-client",
     "python-json-logger",
     "sentry-sdk[fastapi]",
+    "python-jose[cryptography]",
+    "passlib[argon2]",
 ]
 
 [dependency-groups]

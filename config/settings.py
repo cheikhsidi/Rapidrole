@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     # Performance
     slow_request_threshold: float = 1.0
 
+    # Email/SMTP (optional - for production)
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "noreply@jobcopilot.com"
+
     @property
     def cors_origins_list(self) -> list[str]:
         """Parse CORS origins from JSON string with error handling."""

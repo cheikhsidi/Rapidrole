@@ -11,6 +11,7 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from api import (
     applications,
+    auth,
     challenges,
     community,
     intelligence,
@@ -127,6 +128,9 @@ async def general_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error"},
     )
 
+
+# Routers - Authentication
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["authentication"])
 
 # Routers - Core Features
 app.include_router(jobs.router, prefix="/api/v1/jobs", tags=["jobs"])

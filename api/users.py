@@ -26,33 +26,20 @@ class CreateProfileRequest(BaseModel):
     preferences: dict
 
 
-@router.post("/")
+@router.post("/", deprecated=True)
 async def create_user(
     request: CreateUserRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Create a new user"""
-    # Check if user exists
-    result = await db.execute(select(User).where(User.email == request.email))
-    existing_user = result.scalar_one_or_none()
+    """
+    Create a new user (DEPRECATED)
 
-    if existing_user:
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    user = User(
-        email=request.email,
-        full_name=request.full_name,
+    This endpoint is deprecated. Please use POST /api/v1/auth/register instead.
+    """
+    raise HTTPException(
+        status_code=410,
+        detail="This endpoint is deprecated. Please use POST /api/v1/auth/register to create users with authentication.",
     )
-    db.add(user)
-    await db.commit()
-    await db.refresh(user)
-
-    return {
-        "id": str(user.id),
-        "email": user.email,
-        "full_name": user.full_name,
-        "created_at": user.created_at,
-    }
 
 
 @router.get("/{user_id}")
