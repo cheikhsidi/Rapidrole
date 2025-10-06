@@ -1,0 +1,60 @@
+# Documentation
+docs/
+*.md
+!README.md
+
+# Development files
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Environment files (will be set via docker-compose)
+.env
+.env.*
+
+# Testing
+tests/
+pytest.ini
+.coverage
+htmlcov/
+
+# Examples and scripts
+examples/
+scripts/
+
+# Docker files (not needed inside image)
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Database files (use volumes instead)
+*.db
+*.sqlite
+*.sqlite3

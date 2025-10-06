@@ -87,8 +87,6 @@ services:
     volumes:
       # Mount source code for hot reload in development
       - .:/app
-      # Preserve container's __pycache__
-      - /app/__pycache__
     depends_on:
       postgres:
         condition: service_healthy

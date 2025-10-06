@@ -72,9 +72,6 @@ up-dev:
 down:
 	docker-compose down
 
-clean:
-	docker-compose down -v && docker system prune -a -f
-
 # Restart services
 restart:
 	docker-compose restart
@@ -129,12 +126,18 @@ test-cov:
 
 # Testing (Local)
 test-local:
+	@echo "Installing dev dependencies..."
+	@uv sync
 	ENV_FILE=.env.test uv run pytest tests/ -v -m "not integration"
 
 test-local-cov:
+	@echo "Installing dev dependencies..."
+	@uv sync
 	ENV_FILE=.env.test uv run pytest tests/ --cov=. --cov-report=html --cov-report=term -m "not integration"
 
 test-local-all:
+	@echo "Installing dev dependencies..."
+	@uv sync
 	ENV_FILE=.env.test uv run pytest tests/ -v
 
 # Linting (Local)
