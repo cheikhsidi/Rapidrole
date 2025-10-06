@@ -1,0 +1,67 @@
+[project]
+name = "job-copilot-backend"
+version = "0.1.0"
+description = "AI-Powered Universal Job Application Copilot Backend"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "gunicorn>=23.0.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "langchain>=0.3.0",
+    "langgraph>=0.2.0",
+    "langchain-openai>=0.2.0",
+    "langchain-anthropic>=0.3.0",
+    "openai>=1.54.0",
+    "anthropic>=0.39.0",
+    "sqlalchemy>=2.0.36",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
+    "pgvector>=0.3.0",
+    "redis>=5.2.0",
+    "hiredis>=3.0.0",
+    "python-dotenv>=1.0.1",
+    "python-multipart>=0.0.12",
+    "httpx>=0.27.0",
+    "tenacity>=9.0.0",
+    "prometheus-client>=0.21.0",
+    "python-json-logger>=3.2.0",
+    "sentry-sdk[fastapi]>=2.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
