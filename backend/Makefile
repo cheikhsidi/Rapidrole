@@ -72,6 +72,9 @@ up-dev:
 down:
 	docker-compose down
 
+clean:
+	docker-compose down -v && docker system prune -a -f
+
 # Restart services
 restart:
 	docker-compose restart

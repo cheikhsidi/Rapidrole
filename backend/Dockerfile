@@ -8,6 +8,7 @@ RUN pip install uv
 # Copy dependency files
 COPY pyproject.toml .
 COPY .python-version .
+COPY README.md .
 
 # Install dependencies
 RUN uv sync --no-dev

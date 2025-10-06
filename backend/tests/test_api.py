@@ -82,8 +82,6 @@ class TestJobsAPI:
             assert response.status_code in [404, 500]
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_analyze_job_endpoint_exists(self):
         """Test analyze job endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -93,8 +91,6 @@ class TestJobsAPI:
             assert response.status_code in [404, 500]
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_search_jobs_endpoint_exists(self):
         """Test search jobs endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -103,8 +99,6 @@ class TestJobsAPI:
             # Should return 404 or 500, not 405
             assert response.status_code in [404, 500]
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_search_jobs_with_parameters(self):
         """Test search jobs with query parameters"""
@@ -122,8 +116,6 @@ class TestApplicationsAPI:
     """Test Applications API endpoints"""
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_create_application_endpoint_exists(self):
         """Test create application endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -134,8 +126,6 @@ class TestApplicationsAPI:
             assert response.status_code != 405
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_get_application_endpoint_exists(self):
         """Test get application endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -144,8 +134,6 @@ class TestApplicationsAPI:
             # Should return 404 or 500, not 405
             assert response.status_code in [404, 500]
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_update_application_status_endpoint_exists(self):
         """Test update application status endpoint exists"""
@@ -158,8 +146,6 @@ class TestApplicationsAPI:
             assert response.status_code in [404, 500]
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_get_user_applications_endpoint_exists(self):
         """Test get user applications endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -168,8 +154,6 @@ class TestApplicationsAPI:
             # Should return 404 or 500, not 405
             assert response.status_code in [404, 500]
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_get_user_applications_with_status_filter(self):
         """Test get user applications with status filter"""
@@ -187,8 +171,6 @@ class TestUsersAPI:
     """Test Users API endpoints"""
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_create_user_endpoint_exists(self):
         """Test create user endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -199,7 +181,6 @@ class TestUsersAPI:
             assert response.status_code != 405
 
     @pytest.mark.integration
-    @pytest.mark.integration
     async def test_create_user_validation(self):
         """Test create user validates input"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -207,8 +188,6 @@ class TestUsersAPI:
             # Should return validation error
             assert response.status_code == 422
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_get_user_endpoint_exists(self):
         """Test get user endpoint exists"""
@@ -218,8 +197,6 @@ class TestUsersAPI:
             # Should return 404 or 500, not 405
             assert response.status_code in [404, 500]
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_create_profile_endpoint_exists(self):
         """Test create profile endpoint exists"""
@@ -240,8 +217,6 @@ class TestUsersAPI:
             assert response.status_code != 405
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_get_profile_endpoint_exists(self):
         """Test get profile endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -256,8 +231,6 @@ class TestIntelligenceAPI:
     """Test Intelligence API endpoints"""
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_get_compatibility_endpoint_exists(self):
         """Test get compatibility endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -268,8 +241,6 @@ class TestIntelligenceAPI:
             assert response.status_code in [404, 500]
 
     @pytest.mark.integration
-    @pytest.mark.integration
-    @pytest.mark.integration
     async def test_get_recommendations_endpoint_exists(self):
         """Test get recommendations endpoint exists"""
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -278,8 +249,6 @@ class TestIntelligenceAPI:
             # Should return 404 or 500, not 405
             assert response.status_code in [404, 500]
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_get_application_insights_endpoint_exists(self):
         """Test get application insights endpoint exists"""
@@ -313,8 +282,6 @@ class TestAPIValidation:
 class TestAPIErrorHandling:
     """Test API error handling"""
 
-    @pytest.mark.integration
-    @pytest.mark.integration
     @pytest.mark.integration
     async def test_404_for_nonexistent_resource(self):
         """Test 404 is returned for nonexistent resources"""
