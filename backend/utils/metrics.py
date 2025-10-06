@@ -194,23 +194,12 @@ def estimate_llm_cost(provider: str, model: str, tokens: int) -> float | None:
     """
     Estimate LLM API cost based on provider and model.
 
-    Note: These are approximate rates and should be updated regularly.
+    Note: Pricing rates are maintained in config/pricing.py
     """
-    # Approximate costs per 1M tokens (as of 2024)
-    rates = {
-        "openai": {
-            "gpt-4o": 0.005,  # $5 per 1M tokens (average)
-            "gpt-4": 0.03,
-            "gpt-3.5-turbo": 0.001,
-            "text-embedding-3-small": 0.00002,
-        },
-        "anthropic": {
-            "claude-3-5-sonnet-20241022": 0.003,  # $3 per 1M tokens (average)
-            "claude-3-opus": 0.015,
-        },
-    }
+    from config.pricing import get_estimated_cost
 
-    if provider in rates and model in rates[provider]:
-        return (tokens / 1_000_000) * rates[provider][model]
-
-    return None
+    try:
+        return get_estimated_cost(provider, model, tokens)
+    except Exception:
+        # Return None if pricing not available
+        return None

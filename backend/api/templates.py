@@ -9,6 +9,7 @@ This module provides endpoints for:
 """
 
 import time
+from enum import Enum
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -24,6 +25,13 @@ from utils.tracing import AsyncTraceContext
 
 logger = get_logger(__name__)
 router = APIRouter()
+
+
+class VoteType(str, Enum):
+    """Vote type for template voting."""
+
+    UP = "up"
+    DOWN = "down"
 
 
 class CreateTemplateRequest(BaseModel):
@@ -252,7 +260,7 @@ async def get_template(
 @router.post("/{template_id}/vote")
 async def vote_template(
     template_id: UUID,
-    vote_type: str = Query(..., regex="^(up|down)$"),
+    vote_type: VoteType,
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -260,14 +268,15 @@ async def vote_template(
 
     Args:
         template_id: UUID of the template
-        vote_type: "up" or "down"
+        vote_type: Vote type (up or down)
         db: Database session
 
     Returns:
         Updated vote counts
     """
     logger.info(
-        "Template vote requested", extra={"template_id": str(template_id), "vote_type": vote_type}
+        "Template vote requested",
+        extra={"template_id": str(template_id), "vote_type": vote_type.value},
     )
 
     async with AsyncTraceContext("api.vote_template"):
@@ -277,7 +286,7 @@ async def vote_template(
         if not template:
             raise not_found_exception("Template", str(template_id))
 
-        if vote_type == "up":
+        if vote_type == VoteType.UP:
             template.upvotes += 1
         else:
             template.downvotes += 1

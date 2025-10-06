@@ -1,7 +1,18 @@
 import uuid
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -27,9 +38,9 @@ class User(Base):
     last_activity_date = Column(DateTime(timezone=True))
 
     # Privacy settings
-    profile_public = Column(Integer, default=0)  # 0=private, 1=public
-    show_in_leaderboard = Column(Integer, default=1)  # opt-in by default
-    show_in_feed = Column(Integer, default=1)
+    profile_public = Column(Boolean, default=False, nullable=False)
+    show_in_leaderboard = Column(Boolean, default=True, nullable=False)
+    show_in_feed = Column(Boolean, default=True, nullable=False)
 
     # Referral
     referral_code = Column(String(50), unique=True, index=True)

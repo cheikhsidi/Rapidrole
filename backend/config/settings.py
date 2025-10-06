@@ -43,7 +43,15 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> list[str]:
-        return json.loads(self.cors_origins)
+        """Parse CORS origins from JSON string with error handling."""
+        try:
+            return json.loads(self.cors_origins)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Failed to parse CORS_ORIGINS: {self.cors_origins!r}. "
+                "Please ensure it is a valid JSON array of origins. "
+                f"Error: {e}"
+            ) from e
 
     class Config:
         env_file = ".env"
