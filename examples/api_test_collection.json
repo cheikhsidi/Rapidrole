@@ -1,0 +1,285 @@
+{
+  "info": {
+    "name": "Job Copilot API",
+    "description": "Complete API test collection for Job Copilot backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "job_id",
+      "value": ""
+    },
+    {
+      "key": "application_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set('user_id', response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"full_name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/",
+              "host": ["{{base_url}}"],
+              "path": ["users", ""]
+            }
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create User Profile",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resume_text\": \"Experienced software engineer with 5+ years in Python, AI, and backend development.\",\n  \"skills\": [\"Python\", \"FastAPI\", \"PostgreSQL\", \"LangChain\", \"Docker\", \"AWS\"],\n  \"experience\": {\n    \"total_years\": 5,\n    \"positions\": [\n      {\n        \"title\": \"Senior Software Engineer\",\n        \"company\": \"Tech Corp\",\n        \"duration\": \"3 years\",\n        \"achievements\": [\"Built scalable APIs\", \"Led team of 4\"]\n      }\n    ]\n  },\n  \"education\": {\n    \"degree\": \"BS Computer Science\",\n    \"university\": \"State University\"\n  },\n  \"career_goals\": \"Work on cutting-edge AI applications in a fast-paced startup\",\n  \"preferences\": {\n    \"salary_min\": 120000,\n    \"salary_max\": 180000,\n    \"remote\": true,\n    \"locations\": [\"San Francisco\", \"Remote\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["users", "{{user_id}}", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Search Jobs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.jobs && response.jobs.length > 0) {",
+                  "  pm.collectionVariables.set('job_id', response.jobs[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs/search?user_id={{user_id}}&limit=10&min_score=0.6",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "search"],
+              "query": [
+                {"key": "user_id", "value": "{{user_id}}"},
+                {"key": "limit", "value": "10"},
+                {"key": "min_score", "value": "0.6"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "{{job_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Analyze Job",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/jobs/analyze/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["jobs", "analyze", "{{job_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Create Application",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "pm.collectionVariables.set('application_id', response.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"job_id\": \"{{job_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/",
+              "host": ["{{base_url}}"],
+              "path": ["applications", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Application",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/applications/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["applications", "{{application_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"submitted\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/applications/{{application_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["applications", "{{application_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Get User Applications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/applications/user/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["applications", "user", "{{user_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Intelligence",
+      "item": [
+        {
+          "name": "Get Compatibility",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/intelligence/compatibility/{{user_id}}/{{job_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["intelligence", "compatibility", "{{user_id}}", "{{job_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/intelligence/recommendations/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["intelligence", "recommendations", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Application Insights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/intelligence/insights/{{application_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["intelligence", "insights", "{{application_id}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
