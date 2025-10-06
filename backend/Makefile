@@ -28,10 +28,21 @@ help:
 	@echo "  make migrate-create - Create new migration"
 	@echo "  make db-reset       - Reset database (WARNING: deletes all data)"
 	@echo ""
-	@echo "Testing:"
-	@echo "  make test           - Run all tests"
-	@echo "  make test-api       - Run API tests only"
-	@echo "  make test-cov       - Run tests with coverage"
+	@echo "Testing (Docker):"
+	@echo "  make test           - Run all tests in Docker"
+	@echo "  make test-api       - Run API tests only in Docker"
+	@echo "  make test-cov       - Run tests with coverage in Docker"
+	@echo ""
+	@echo "Testing (Local):"
+	@echo "  make test-local     - Run unit tests locally (51 tests)"
+	@echo "  make test-local-all - Run ALL tests locally (73 tests, requires DB)"
+	@echo "  make test-local-cov - Run unit tests with coverage locally"
+	@echo ""
+	@echo "Linting (Local):"
+	@echo "  make lint           - Run ruff linter"
+	@echo "  make lint-fix       - Run ruff linter with auto-fix"
+	@echo "  make format         - Format code with ruff"
+	@echo "  make format-check   - Check formatting without changes"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make clean          - Remove containers and volumes"
@@ -103,7 +114,7 @@ db-reset:
 		docker-compose up -d api; \
 	fi
 
-# Testing
+# Testing (Docker)
 test:
 	docker-compose exec api uv run pytest tests/ -v
 
@@ -112,6 +123,29 @@ test-api:
 
 test-cov:
 	docker-compose exec api uv run pytest tests/ --cov=. --cov-report=html --cov-report=term
+
+# Testing (Local)
+test-local:
+	ENV_FILE=.env.test uv run pytest tests/ -v -m "not integration"
+
+test-local-cov:
+	ENV_FILE=.env.test uv run pytest tests/ --cov=. --cov-report=html --cov-report=term -m "not integration"
+
+test-local-all:
+	ENV_FILE=.env.test uv run pytest tests/ -v
+
+# Linting (Local)
+lint:
+	uv run ruff check .
+
+lint-fix:
+	uv run ruff check . --fix
+
+format:
+	uv run ruff format .
+
+format-check:
+	uv run ruff format . --check
 
 # Utilities
 clean:

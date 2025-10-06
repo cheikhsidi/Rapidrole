@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from pydantic import BaseModel, EmailStr
 from uuid import UUID
-from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, EmailStr
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import get_db
 from db.models import User, UserProfile
@@ -33,14 +33,12 @@ async def create_user(
 ):
     """Create a new user"""
     # Check if user exists
-    result = await db.execute(
-        select(User).where(User.email == request.email)
-    )
+    result = await db.execute(select(User).where(User.email == request.email))
     existing_user = result.scalar_one_or_none()
-    
+
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
-    
+
     user = User(
         email=request.email,
         full_name=request.full_name,
@@ -48,7 +46,7 @@ async def create_user(
     db.add(user)
     await db.commit()
     await db.refresh(user)
-    
+
     return {
         "id": str(user.id),
         "email": user.email,
@@ -63,14 +61,12 @@ async def get_user(
     db: AsyncSession = Depends(get_db),
 ):
     """Get user details"""
-    result = await db.execute(
-        select(User).where(User.id == user_id)
-    )
+    result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
-    
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     return {
         "id": str(user.id),
         "email": user.email,
@@ -87,29 +83,25 @@ async def create_profile(
 ):
     """Create or update user profile with embeddings"""
     # Verify user exists
-    user_result = await db.execute(
-        select(User).where(User.id == user_id)
-    )
+    user_result = await db.execute(select(User).where(User.id == user_id))
     user = user_result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Generate embeddings
     skills_text = ", ".join(request.skills)
     experience_text = str(request.experience)
-    
+
     embeddings = await embedding_service.embed_profile(
         skills=skills_text,
         experience=experience_text,
         goals=request.career_goals,
     )
-    
+
     # Check if profile exists
-    profile_result = await db.execute(
-        select(UserProfile).where(UserProfile.user_id == user_id)
-    )
+    profile_result = await db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
     profile = profile_result.scalar_one_or_none()
-    
+
     if profile:
         # Update existing profile
         profile.resume_text = request.resume_text
@@ -136,10 +128,10 @@ async def create_profile(
             goals_embedding=embeddings["goals_embedding"],
         )
         db.add(profile)
-    
+
     await db.commit()
     await db.refresh(profile)
-    
+
     return {
         "id": str(profile.id),
         "user_id": str(profile.user_id),
@@ -154,14 +146,12 @@ async def get_profile(
     db: AsyncSession = Depends(get_db),
 ):
     """Get user profile"""
-    result = await db.execute(
-        select(UserProfile).where(UserProfile.user_id == user_id)
-    )
+    result = await db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
     profile = result.scalar_one_or_none()
-    
+
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
-    
+
     return {
         "id": str(profile.id),
         "user_id": str(profile.user_id),

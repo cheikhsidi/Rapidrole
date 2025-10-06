@@ -1,65 +1,65 @@
-from typing import TypedDict, List, Dict, Optional
 from datetime import datetime
+from typing import TypedDict
 
 
 class ApplicationState(TypedDict):
     """State for application workflow"""
-    
+
     # Input data
     user_id: str
     job_id: str
-    job_posting: Dict
-    user_profile: Dict
-    
+    job_posting: dict
+    user_profile: dict
+
     # Workflow stage
     stage: str  # analyzing, optimizing, generating, submitting
-    
+
     # Analysis results
-    compatibility_analysis: Optional[Dict]
-    skill_gaps: Optional[List[str]]
-    recommendations: Optional[List[str]]
-    
+    compatibility_analysis: dict | None
+    skill_gaps: list[str] | None
+    recommendations: list[str] | None
+
     # Generated documents
-    tailored_resume: Optional[str]
-    cover_letter: Optional[str]
-    
+    tailored_resume: str | None
+    cover_letter: str | None
+
     # Metadata
     started_at: datetime
-    errors: List[str]
-    human_feedback: Optional[str]
+    errors: list[str]
+    human_feedback: str | None
 
 
 class JobAnalysisState(TypedDict):
     """State for job analysis workflow"""
-    
-    job_posting: Dict
-    
+
+    job_posting: dict
+
     # Analysis results
-    required_skills: List[str]
-    preferred_skills: List[str]
+    required_skills: list[str]
+    preferred_skills: list[str]
     experience_level: str
-    salary_range: Optional[Dict]
-    company_culture: Optional[str]
-    key_responsibilities: List[str]
-    
+    salary_range: dict | None
+    company_culture: str | None
+    key_responsibilities: list[str]
+
     # Metadata
     confidence_score: float
-    errors: List[str]
+    errors: list[str]
 
 
 class ResumeOptimizationState(TypedDict):
     """State for resume optimization workflow"""
-    
+
     original_resume: str
-    job_requirements: Dict
-    user_profile: Dict
-    
+    job_requirements: dict
+    user_profile: dict
+
     # Optimization results
     optimized_resume: str
-    changes_made: List[str]
-    keyword_matches: Dict
+    changes_made: list[str]
+    keyword_matches: dict
     ats_score: float
-    
+
     # Metadata
     optimization_strategy: str
-    errors: List[str]
+    errors: list[str]

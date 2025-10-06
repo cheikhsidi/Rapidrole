@@ -1,21 +1,32 @@
 from contextlib import asynccontextmanager
+
+import sentry_sdk
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
 from prometheus_client import make_asgi_app
-import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
+from api import (
+    applications,
+    challenges,
+    community,
+    intelligence,
+    jobs,
+    referrals,
+    subscriptions,
+    templates,
+    users,
+)
 from config.settings import settings
-from db.database import init_db, close_db
-from api import jobs, applications, users, intelligence
+from db.database import close_db, init_db
 from utils.logging import get_logger, setup_logging
 from utils.middleware import (
-    RequestTracingMiddleware,
-    PerformanceMonitoringMiddleware,
     ErrorHandlingMiddleware,
+    PerformanceMonitoringMiddleware,
+    RequestTracingMiddleware,
 )
 
 # Initialize logging
@@ -44,17 +55,17 @@ async def lifespan(app: FastAPI):
     try:
         await init_db()
         logger.info("Database initialized successfully")
-    except Exception as e:
+    except Exception:
         logger.error("Failed to initialize database", exc_info=True)
         raise
-    
+
     yield
-    
+
     logger.info("Application shutting down")
     try:
         await close_db()
         logger.info("Database connections closed")
-    except Exception as e:
+    except Exception:
         logger.error("Error during shutdown", exc_info=True)
 
 
@@ -67,7 +78,9 @@ app = FastAPI(
 
 # Add custom middleware (order matters!)
 app.add_middleware(ErrorHandlingMiddleware)
-app.add_middleware(PerformanceMonitoringMiddleware, slow_request_threshold=settings.slow_request_threshold)
+app.add_middleware(
+    PerformanceMonitoringMiddleware, slow_request_threshold=settings.slow_request_threshold
+)
 app.add_middleware(RequestTracingMiddleware)
 
 # CORS
@@ -89,7 +102,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         extra={
             "path": request.url.path,
             "errors": exc.errors(),
-        }
+        },
     )
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -114,8 +127,6 @@ async def general_exception_handler(request: Request, exc: Exception):
         content={"detail": "Internal server error"},
     )
 
-# Import new routers
-from api import community, templates, subscriptions, challenges, referrals
 
 # Routers - Core Features
 app.include_router(jobs.router, prefix="/api/v1/jobs", tags=["jobs"])
@@ -152,19 +163,20 @@ async def health_check():
 @app.get("/health/ready")
 async def readiness_check():
     """Readiness check for Kubernetes/load balancers"""
+
     from db.database import engine
-    from redis.asyncio import Redis
-    
+
     try:
         # Check database
         async with engine.connect() as conn:
             await conn.execute("SELECT 1")
-        
+
         # Check Redis
         from db.database import redis_client
+
         if redis_client:
             await redis_client.ping()
-        
+
         logger.debug("Readiness check passed")
         return {"status": "ready"}
     except Exception as e:

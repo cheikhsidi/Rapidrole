@@ -7,16 +7,28 @@ Provides:
 - Common test utilities
 """
 
-import pytest
 import asyncio
-from typing import AsyncGenerator
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+import os
+from collections.abc import AsyncGenerator
 
-from main import app
+import pytest
+
+# Load test environment variables before importing app modules
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
+os.environ["REDIS_URL"] = "redis://localhost:6379/15"
+os.environ["OPENAI_API_KEY"] = "sk-test-key"
+os.environ["ANTHROPIC_API_KEY"] = "sk-ant-test-key"
+os.environ["SECRET_KEY"] = "test-secret-key"
+os.environ["APP_ENV"] = "test"
+
+# Now safe to import after env is set
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+# Import models to register them with Base.metadata
+import db.models  # noqa: F401
 from db.database import Base, get_db
-from config.settings import settings
-
+from main import app
 
 # Test database URL (use in-memory SQLite for tests)
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -37,15 +49,15 @@ async def test_db_engine():
         TEST_DATABASE_URL,
         echo=False,
     )
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield engine
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await engine.dispose()
 
 
@@ -57,7 +69,7 @@ async def test_db_session(test_db_engine) -> AsyncGenerator[AsyncSession, None]:
         class_=AsyncSession,
         expire_on_commit=False,
     )
-    
+
     async with async_session() as session:
         yield session
 
@@ -65,15 +77,15 @@ async def test_db_session(test_db_engine) -> AsyncGenerator[AsyncSession, None]:
 @pytest.fixture
 async def test_client(test_db_session):
     """Create a test client with database override"""
-    
+
     async def override_get_db():
         yield test_db_session
-    
+
     app.dependency_overrides[get_db] = override_get_db
-    
-    async with AsyncClient(app=app, base_url="http://test") as client:
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 
 
@@ -81,7 +93,7 @@ async def test_client(test_db_session):
 def mock_openai_response():
     """Mock OpenAI API response"""
     from unittest.mock import Mock
-    
+
     response = Mock()
     response.content = '{"result": "success"}'
     response.data = [Mock(embedding=[0.1] * 768)]
@@ -93,7 +105,7 @@ def mock_openai_response():
 def mock_anthropic_response():
     """Mock Anthropic API response"""
     from unittest.mock import Mock
-    
+
     response = Mock()
     response.content = "Generated cover letter text"
     return response
@@ -102,10 +114,7 @@ def mock_anthropic_response():
 @pytest.fixture
 def sample_user_data():
     """Sample user data for testing"""
-    return {
-        "email": "test@example.com",
-        "full_name": "Test User"
-    }
+    return {"email": "test@example.com", "full_name": "Test User"}
 
 
 @pytest.fixture
@@ -117,23 +126,12 @@ def sample_profile_data():
         "experience": {
             "total_years": 5,
             "positions": [
-                {
-                    "title": "Senior Developer",
-                    "company": "Tech Corp",
-                    "duration": "3 years"
-                }
-            ]
+                {"title": "Senior Developer", "company": "Tech Corp", "duration": "3 years"}
+            ],
         },
-        "education": {
-            "degree": "BS Computer Science",
-            "university": "State University"
-        },
+        "education": {"degree": "BS Computer Science", "university": "State University"},
         "career_goals": "Build innovative AI products",
-        "preferences": {
-            "salary_min": 120000,
-            "remote": True,
-            "locations": ["Remote"]
-        }
+        "preferences": {"salary_min": 120000, "remote": True, "locations": ["Remote"]},
     }
 
 
@@ -149,5 +147,5 @@ def sample_job_data():
         "description": "We're looking for a senior Python developer",
         "requirements": "5+ years Python, FastAPI, PostgreSQL",
         "required_skills": ["Python", "FastAPI", "PostgreSQL"],
-        "url": "https://example.com/job/123"
+        "url": "https://example.com/job/123",
     }
