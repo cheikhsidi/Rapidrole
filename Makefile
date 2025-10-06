@@ -127,17 +127,17 @@ test-cov:
 # Testing (Local)
 test-local:
 	@echo "Installing dev dependencies..."
-	@uv sync
+	@uv pip install pytest pytest-asyncio pytest-cov aiosqlite greenlet
 	ENV_FILE=.env.test uv run pytest tests/ -v -m "not integration"
 
 test-local-cov:
 	@echo "Installing dev dependencies..."
-	@uv sync
+	@uv pip install pytest pytest-asyncio pytest-cov aiosqlite greenlet
 	ENV_FILE=.env.test uv run pytest tests/ --cov=. --cov-report=html --cov-report=term -m "not integration"
 
 test-local-all:
 	@echo "Installing dev dependencies..."
-	@uv sync
+	@uv pip install pytest pytest-asyncio pytest-cov aiosqlite greenlet
 	ENV_FILE=.env.test uv run pytest tests/ -v
 
 # Linting (Local)
