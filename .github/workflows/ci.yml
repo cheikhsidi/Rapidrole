@@ -50,17 +50,14 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd backend
         uv sync
     
     - name: Run linting
       run: |
-        cd backend
         uv run ruff check .
     
     - name: Run type checking
       run: |
-        cd backend
         uv run mypy . --ignore-missing-imports || true
     
     - name: Run tests
@@ -72,7 +69,6 @@ jobs:
         SECRET_KEY: test-secret-key
         APP_ENV: test
       run: |
-        cd backend
         uv run pytest tests/ -v --tb=short
     
     - name: Run tests with coverage
@@ -84,7 +80,6 @@ jobs:
         SECRET_KEY: test-secret-key
         APP_ENV: test
       run: |
-        cd backend
         uv run pytest tests/ --cov=. --cov-report=xml --cov-report=term
     
     - name: Upload coverage reports
@@ -110,12 +105,10 @@ jobs:
     
     - name: Install dependencies
       run: |
-        cd backend
         uv sync --only-dev
     
     - name: Run ruff
       run: |
-        cd backend
         uv run ruff check . --output-format=github
 
   security:
@@ -144,7 +137,6 @@ jobs:
     
     - name: Build Docker image
       run: |
-        cd backend
         docker build -t job-copilot-backend:${{ github.sha }} .
     
     - name: Test Docker image
